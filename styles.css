@@ -321,3 +321,36 @@ input:checked + .slider:before {
 .slider-header label {
     margin-bottom: 0;
 }
+
+.icon-file-btn {
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    outline: none;
+}
+
+.addfile-icon {
+    width: 24px;
+    height: 24px;
+    transition: filter 0.2s;
+    filter: invert(0); /* Black by default (light mode) */
+}
+
+body.dark-mode .addfile-icon {
+    filter: invert(1); /* White in dark mode */
+}
+
+.file-name {
+    margin-left: 10px;
+    font-size: 14px;
+    color: var(--info-color);
+    vertical-align: middle;
+    word-break: break-all;
+}
+
+.file-input-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}

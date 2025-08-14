@@ -99,6 +99,46 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Save the composite icon
     saveButton.addEventListener('click', saveCompositeIcon);
+
+    document.getElementById('icon-select-btn').addEventListener('click', function () {
+        document.getElementById('icon-select').click();
+    });
+    document.getElementById('icon-select').addEventListener('change', function (e) {
+        const file = e.target.files[0];
+        document.getElementById('icon-file-name').textContent = file ? file.name : '';
+        // ... existing image loading logic ...
+    });
+    document.getElementById('badge-select-btn').addEventListener('click', function () {
+        document.getElementById('badge-select').click();
+    });
+    document.getElementById('badge-select').addEventListener('change', function (e) {
+        const file = e.target.files[0];
+        document.getElementById('badge-file-name').textContent = file ? file.name : '';
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                badgeIcon = new Image();
+                badgeIcon.onload = updatePreview;
+                badgeIcon.src = event.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+    
+    // Update badge position
+    badgePositionSelect.addEventListener('change', updatePreview);
+    
+    // Save the composite icon
+    saveButton.addEventListener('click', saveCompositeIcon);
+
+    document.getElementById('icon-select-btn').addEventListener('click', function () {
+        document.getElementById('icon-select').click();
+    });
+    document.getElementById('icon-select').addEventListener('change', function (e) {
+        const file = e.target.files[0];
+        document.getElementById('icon-file-name').textContent = file ? file.name : '';
+        // ... existing image loading logic ...
+    });
     
     // Initialize canvas
     function initCanvas() {
