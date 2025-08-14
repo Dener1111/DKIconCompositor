@@ -9,10 +9,12 @@
 <body>
     <div class="container">
         <div class="theme-toggle">
-            <label for="dark-mode-toggle">Dark Mode</label>
-            <label class="switch">
+            <label class="theme-switch" for="dark-mode-toggle">
                 <input type="checkbox" id="dark-mode-toggle">
-                <span class="slider"></span>
+                <span class="icon-container">
+                    <img src="darkmode.svg" alt="Light Mode" class="light-icon">
+                    <img src="lightmode.svg" alt="Dark Mode" class="dark-icon">
+                </span>
             </label>
         </div>
         
@@ -36,16 +38,18 @@
                     <label for="badge-position">Badge Position:</label>
                     <select id="badge-position">
                         <option value="top-left">Top Left</option>
-                        <option value="top-right" selected>Top Right</option>
+                        <option value="top-right">Top Right</option>
                         <option value="bottom-left">Bottom Left</option>
-                        <option value="bottom-right">Bottom Right</option>
+                        <option value="bottom-right" selected>Bottom Right</option>
                     </select>
                 </div>
                 
                 <div class="setting-group">
-                    <label for="badge-size">Badge Size (% of icon):</label>
-                    <input type="range" id="badge-size" min="10" max="50" value="30">
-                    <span id="badge-size-value">30%</span>
+                    <div class="slider-header">
+                        <label for="badge-size">Badge Size:</label>
+                        <span id="badge-size-value">45%</span>
+                    </div>
+                    <input type="range" id="badge-size" min="20" max="50" value="45">
                 </div>
 
                 <div class="setting-group">
@@ -59,7 +63,7 @@
                     </select>
                 </div>
                 
-                <button id="save-button" class="primary-button">Save</button>
+                <button id="save-button" class="primary-button">SAVE</button>
             </div>
             
             <!-- Right Column - Preview -->

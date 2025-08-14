@@ -11,6 +11,22 @@ document.addEventListener('DOMContentLoaded', function() {
     const currentResolution = document.getElementById('current-resolution');
     const darkModeToggle = document.getElementById('dark-mode-toggle');
     
+    // Set dark mode as default
+    document.body.classList.add('dark-mode');
+    darkModeToggle.checked = true;
+    localStorage.setItem('darkMode', 'enabled');
+    
+    // Handle dark mode toggle
+    darkModeToggle.addEventListener('change', function() {
+        if (this.checked) {
+            document.body.classList.add('dark-mode');
+            localStorage.setItem('darkMode', 'enabled');
+        } else {
+            document.body.classList.remove('dark-mode');
+            localStorage.setItem('darkMode', 'disabled');
+        }
+    });
+    
     // Canvas context
     const ctx = previewCanvas.getContext('2d');
     
