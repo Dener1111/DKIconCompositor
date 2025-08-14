@@ -8,8 +8,8 @@ document.addEventListener('DOMContentLoaded', function() {
     const badgeSizeValue = document.getElementById('badge-size-value');
     const saveButton = document.getElementById('save-button');
     const previewCanvas = document.getElementById('preview-canvas');
-    const currentResolution = document.getElementById('current-resolution');
     const darkModeToggle = document.getElementById('dark-mode-toggle');
+    const filenameInput = document.getElementById('filename-input');
     
     // Set dark mode as default
     document.body.classList.add('dark-mode');
@@ -60,7 +60,6 @@ document.addEventListener('DOMContentLoaded', function() {
     // Update resolution
     resolutionSelect.addEventListener('change', function() {
         const resolution = parseInt(this.value);
-        currentResolution.textContent = `${resolution}x${resolution}`;
         previewCanvas.width = resolution;
         previewCanvas.height = resolution;
         updatePreview();
@@ -130,15 +129,6 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Save the composite icon
     saveButton.addEventListener('click', saveCompositeIcon);
-
-    document.getElementById('icon-select-btn').addEventListener('click', function () {
-        document.getElementById('icon-select').click();
-    });
-    document.getElementById('icon-select').addEventListener('change', function (e) {
-        const file = e.target.files[0];
-        document.getElementById('icon-file-name').textContent = file ? file.name : '';
-        // ... existing image loading logic ...
-    });
     
     // Initialize canvas
     function initCanvas() {
@@ -146,7 +136,8 @@ document.addEventListener('DOMContentLoaded', function() {
         // Keep the canvas size fixed at 256x256 for preview
         previewCanvas.width = 256;
         previewCanvas.height = 256;
-        currentResolution.textContent = `${resolution}x${resolution}`;
+        // REMOVE this line:
+        // currentResolution.textContent = `${resolution}x${resolution}`;
         
         // Clear canvas with transparent background
         ctx.clearRect(0, 0, previewCanvas.width, previewCanvas.height);
@@ -311,8 +302,9 @@ document.addEventListener('DOMContentLoaded', function() {
             drawImageMaintainAspectRatio(badgeIcon, badgeX, badgeY, badgeWidth, badgeHeight, tempCtx);
         }
 
+        const filename = filenameInput.value.trim() || 'composite-icon.png';
         const link = document.createElement('a');
-        link.download = 'composite-icon.png';
+        link.download = filename;
         link.href = tempCanvas.toDataURL('image/png');
         document.body.appendChild(link);
         link.click();
