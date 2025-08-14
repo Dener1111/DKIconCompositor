@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Icon Compositor</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <div class="theme-toggle">
+            <label for="dark-mode-toggle">Dark Mode</label>
+            <label class="switch">
+                <input type="checkbox" id="dark-mode-toggle">
+                <span class="slider"></span>
+            </label>
+        </div>
+        
+        <h1>Icon Compositor</h1>
+        <div class="app-container">
+            <!-- Left Column - Settings -->
+            <div class="settings-panel">
+                <h2>Settings</h2>
+                
+                <div class="setting-group">
+                    <label for="icon-select">Select Main Icon:</label>
+                    <input type="file" id="icon-select" accept="image/*">
+                </div>
+                
+                <div class="setting-group">
+                    <label for="badge-select">Select Badge:</label>
+                    <input type="file" id="badge-select" accept="image/*">
+                </div>
+                
+                <div class="setting-group">
+                    <label for="badge-position">Badge Position:</label>
+                    <select id="badge-position">
+                        <option value="top-left">Top Left</option>
+                        <option value="top-right" selected>Top Right</option>
+                        <option value="bottom-left">Bottom Left</option>
+                        <option value="bottom-right">Bottom Right</option>
+                    </select>
+                </div>
+                
+                <div class="setting-group">
+                    <label for="badge-size">Badge Size (% of icon):</label>
+                    <input type="range" id="badge-size" min="10" max="50" value="30">
+                    <span id="badge-size-value">30%</span>
+                </div>
+
+                <div class="setting-group">
+                    <label for="resolution-select">Resolution:</label>
+                    <select id="resolution-select">
+                        <option value="32">32x32</option>
+                        <option value="64" selected>64x64</option>
+                        <option value="128">128x128</option>
+                        <option value="256">256x256</option>
+                        <option value="512">512x512</option>
+                    </select>
+                </div>
+                
+                <button id="save-button" class="primary-button">Save</button>
+            </div>
+            
+            <!-- Right Column - Preview -->
+            <div class="preview-panel">
+                <h2>Preview</h2>
+                <div class="preview-container">
+                    <canvas id="preview-canvas" width="256" height="256"></canvas>
+                </div>
+                <div class="preview-info">
+                    <p>Resolution: <span id="current-resolution">64x64</span></p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="script.js"></script>
+</body>
+</html>
