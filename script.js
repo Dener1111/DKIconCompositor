@@ -113,6 +113,10 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     // Update preview canvas
+    // Shared cutout grow and blur percentages
+    const CUTOUT_GROW_PERCENT = 0.04; // 4% grow (adjust as needed)
+    const CUTOUT_BLUR_PERCENT = 0.01; // 1% blur (adjust as needed)
+    
     function updatePreview() {
         initCanvas();
 
@@ -144,60 +148,40 @@ document.addEventListener('DOMContentLoaded', function() {
                         break;
                 }
 
-                // Calculate cutout padding in pixels based on canvas size
-                const cutoutPadding = Math.round(previewCanvas.width * CUTOUT_PADDING_PERCENT);
+                // Calculate grow and blur in pixels based on canvas size
+                const growPx = Math.round(previewCanvas.width * CUTOUT_GROW_PERCENT);
+                const blurPx = Math.round(previewCanvas.width * CUTOUT_BLUR_PERCENT);
 
-                // Create a temporary canvas to draw the badge shape
+                // Draw badge shape to temp canvas
                 const badgeShapeCanvas = document.createElement('canvas');
                 badgeShapeCanvas.width = previewCanvas.width;
                 badgeShapeCanvas.height = previewCanvas.height;
                 const badgeShapeCtx = badgeShapeCanvas.getContext('2d');
-
-                // Draw the badge onto this temporary canvas
                 drawImageMaintainAspectRatio(badgeIcon, badgeX, badgeY, badgeWidth, badgeHeight, badgeShapeCtx);
 
-                // Create another temporary canvas for the grown (solidified and sharpened) mask
-                const grownMaskCanvas = document.createElement('canvas');
-                grownMaskCanvas.width = previewCanvas.width;
-                grownMaskCanvas.height = previewCanvas.height;
-                const grownMaskCtx = grownMaskCanvas.getContext('2d');
+                // Create mask canvas for grown and blurred mask
+                const maskCanvas = document.createElement('canvas');
+                maskCanvas.width = previewCanvas.width;
+                maskCanvas.height = previewCanvas.height;
+                const maskCtx = maskCanvas.getContext('2d');
 
-                // Draw the original badge shape onto the mask canvas
-                grownMaskCtx.drawImage(badgeShapeCanvas, 0, 0);
-
-                // Apply blur filter to the mask context to expand the shape
-                grownMaskCtx.filter = `blur(${cutoutPadding}px)`;
-
-                // Draw the badge shape again to make the blurred area more solid
-                grownMaskCtx.drawImage(badgeShapeCanvas, 0, 0);
-
-                // Reset filter
-                grownMaskCtx.filter = 'none';
-
-                // Solidify the expanded, blurred area by drawing a solid color where pixels exist
-                grownMaskCtx.globalCompositeOperation = 'source-in';
-                grownMaskCtx.fillStyle = 'black'; // Any solid color will work here
-                grownMaskCtx.fillRect(0, 0, grownMaskCanvas.width, grownMaskCanvas.height);
-
-                // Now, sharpen the edges by thresholding the alpha channel
-                const imageData = grownMaskCtx.getImageData(0, 0, grownMaskCanvas.width, grownMaskCanvas.height);
-                const data = imageData.data;
-                for (let i = 0; i < data.length; i += 4) {
-                    // If alpha is greater than 0 (not fully transparent), make it fully opaque
-                    if (data[i + 3] > 0) {
-                        data[i + 3] = 255;
-                    } else {
-                        // Otherwise, make it fully transparent
-                        data[i + 3] = 0;
+                // Simulate "grow" by drawing badge shape with small offsets
+                for (let dx = -growPx; dx <= growPx; dx += Math.max(1, Math.floor(growPx / 2))) {
+                    for (let dy = -growPx; dy <= growPx; dy += Math.max(1, Math.floor(growPx / 2))) {
+                        maskCtx.drawImage(badgeShapeCanvas, dx, dy);
                     }
                 }
-                grownMaskCtx.putImageData(imageData, 0, 0);
-                
-                // Use the grownMaskCanvas for the cutout
+
+                // Apply a small blur for edge softness
+                maskCtx.filter = `blur(${blurPx}px)`;
+                maskCtx.drawImage(maskCanvas, 0, 0);
+                maskCtx.filter = 'none';
+
+                // Use the blurred mask directly for cutout
                 ctx.globalCompositeOperation = 'destination-out';
-                ctx.drawImage(grownMaskCanvas, 0, 0);
-        
-                // Reset composite operation and draw the badge at normal size
+                ctx.drawImage(maskCanvas, 0, 0);
+
+                // Draw badge on top
                 ctx.globalCompositeOperation = 'source-over';
                 drawImageMaintainAspectRatio(badgeIcon, badgeX, badgeY, badgeWidth, badgeHeight);
             }
@@ -215,21 +199,20 @@ document.addEventListener('DOMContentLoaded', function() {
             alert('Please select a main icon first.');
             return;
         }
-        
+
         const resolution = parseInt(resolutionSelect.value);
         const tempCanvas = document.createElement('canvas');
         tempCanvas.width = resolution;
         tempCanvas.height = resolution;
         const tempCtx = tempCanvas.getContext('2d');
-        
-        // Draw the main icon first
+
         drawImageMaintainAspectRatio(mainIcon, 0, 0, resolution, resolution, tempCtx);
-        
+
         if (badgeIcon) {
             const badgeSize = parseInt(badgeSizeSlider.value) / 100;
             const badgeWidth = resolution * badgeSize;
             const badgeHeight = resolution * badgeSize;
-        
+
             let badgeX, badgeY;
             switch (badgePositionSelect.value) {
                 case 'top-left':
@@ -250,45 +233,44 @@ document.addEventListener('DOMContentLoaded', function() {
                     break;
             }
 
-            // Calculate cutout padding in pixels based on resolution
-            const cutoutPadding = Math.round(resolution * CUTOUT_PADDING_PERCENT);
+            // Calculate grow and blur in pixels based on resolution
+            const growPx = Math.round(resolution * CUTOUT_GROW_PERCENT);
+            const blurPx = Math.round(resolution * CUTOUT_BLUR_PERCENT);
 
-            // Create a mask canvas for the expanded badge
+            // Draw badge shape to temp canvas
+            const badgeShapeCanvas = document.createElement('canvas');
+            badgeShapeCanvas.width = resolution;
+            badgeShapeCanvas.height = resolution;
+            const badgeShapeCtx = badgeShapeCanvas.getContext('2d');
+            drawImageMaintainAspectRatio(badgeIcon, badgeX, badgeY, badgeWidth, badgeHeight, badgeShapeCtx);
+
+            // Create mask canvas for grown and blurred mask
             const maskCanvas = document.createElement('canvas');
             maskCanvas.width = resolution;
             maskCanvas.height = resolution;
             const maskCtx = maskCanvas.getContext('2d');
-        
-            // Draw the badge at its position and size
-            drawImageMaintainAspectRatio(badgeIcon, badgeX, badgeY, badgeWidth, badgeHeight, maskCtx);
-        
-            // Blur to expand the mask
-            maskCtx.filter = `blur(${cutoutPadding}px)`;
+
+            // Simulate "grow" by drawing badge shape with small offsets
+            for (let dx = -growPx; dx <= growPx; dx += Math.max(1, Math.floor(growPx / 2))) {
+                for (let dy = -growPx; dy <= growPx; dy += Math.max(1, Math.floor(growPx / 2))) {
+                    maskCtx.drawImage(badgeShapeCanvas, dx, dy);
+                }
+            }
+
+            // Apply a small blur for edge softness
+            maskCtx.filter = `blur(${blurPx}px)`;
             maskCtx.drawImage(maskCanvas, 0, 0);
             maskCtx.filter = 'none';
-        
-            // Solidify the mask
-            maskCtx.globalCompositeOperation = 'source-in';
-            maskCtx.fillStyle = 'black';
-            maskCtx.fillRect(0, 0, maskCanvas.width, maskCanvas.height);
-        
-            // Sharpen the mask
-            const imageData = maskCtx.getImageData(0, 0, maskCanvas.width, maskCanvas.height);
-            const data = imageData.data;
-            for (let i = 0; i < data.length; i += 4) {
-                data[i + 3] = data[i + 3] > 0 ? 255 : 0;
-            }
-            maskCtx.putImageData(imageData, 0, 0);
-        
-            // Apply the cutout mask to the main icon
+
+            // Use the blurred mask directly for cutout
             tempCtx.globalCompositeOperation = 'destination-out';
             tempCtx.drawImage(maskCanvas, 0, 0);
-        
-            // Draw the badge on top
+
+            // Draw badge on top
             tempCtx.globalCompositeOperation = 'source-over';
             drawImageMaintainAspectRatio(badgeIcon, badgeX, badgeY, badgeWidth, badgeHeight, tempCtx);
         }
-        
+
         const link = document.createElement('a');
         link.download = 'composite-icon.png';
         link.href = tempCanvas.toDataURL('image/png');
@@ -296,9 +278,6 @@ document.addEventListener('DOMContentLoaded', function() {
         link.click();
         document.body.removeChild(link);
     }
-    
-    // Shared cutout padding percentage (e.g., 8% of canvas size)
-    const CUTOUT_PADDING_PERCENT = 0.02;
     
     // Draw image maintaining aspect ratio
     function drawImageMaintainAspectRatio(img, x, y, width, height, context = ctx) {
