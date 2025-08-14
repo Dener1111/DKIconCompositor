@@ -105,7 +105,15 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('icon-select').addEventListener('change', function (e) {
         const file = e.target.files[0];
         document.getElementById('icon-file-name').textContent = file ? file.name : '';
-        // ... existing image loading logic ...
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                mainIcon = new Image();
+                mainIcon.onload = updatePreview;
+                mainIcon.src = event.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
     });
     document.getElementById('badge-select-btn').addEventListener('click', function () {
         document.getElementById('badge-select').click();
@@ -336,4 +344,45 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Initialize the canvas on load
     initCanvas();
+    // Drag & Drop for Main Icon
+    const iconBtn = document.getElementById('icon-select-btn');
+    const iconInput = document.getElementById('icon-select');
+    iconBtn.addEventListener('dragover', function(e) {
+        e.preventDefault();
+        iconBtn.style.filter = 'brightness(1.2)';
+    });
+    iconBtn.addEventListener('dragleave', function(e) {
+        iconBtn.style.filter = '';
+    });
+    iconBtn.addEventListener('drop', function(e) {
+        e.preventDefault();
+        iconBtn.style.filter = '';
+        if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+            iconInput.files = e.dataTransfer.files;
+            // Trigger change event manually
+            const event = new Event('change', { bubbles: true });
+            iconInput.dispatchEvent(event);
+        }
+    });
+    
+    // Drag & Drop for Badge Icon
+    const badgeBtn = document.getElementById('badge-select-btn');
+    const badgeInput = document.getElementById('badge-select');
+    badgeBtn.addEventListener('dragover', function(e) {
+        e.preventDefault();
+        badgeBtn.style.filter = 'brightness(1.2)';
+    });
+    badgeBtn.addEventListener('dragleave', function(e) {
+        badgeBtn.style.filter = '';
+    });
+    badgeBtn.addEventListener('drop', function(e) {
+        e.preventDefault();
+        badgeBtn.style.filter = '';
+        if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+            badgeInput.files = e.dataTransfer.files;
+            // Trigger change event manually
+            const event = new Event('change', { bubbles: true });
+            badgeInput.dispatchEvent(event);
+        }
+    });
 });
