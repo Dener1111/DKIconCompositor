@@ -5,19 +5,20 @@
 }
 
 :root {
-    --bg-color: #f5f5f5;
-    --container-bg: white;
-    --text-color: #333;
-    --heading-color: #2c3e50;
-    --subheading-color: #34495e;
-    --panel-bg: #f9f9f9;
-    --border-color: #eee;
-    --input-border: #ddd;
-    --button-bg: #3498db;
-    --button-hover: #2980b9;
-    --preview-bg: #f0f0f0;
-    --placeholder-color: #ccc;
-    --info-color: #7f8c8d;
+    --bg-color: #fdf6e3; /* soft warm background */
+    --container-bg: #fffbe8; /* subtle light yellow for panels */
+    --text-color: #3a2c0a; /* deep warm brown for text */
+    --heading-color: #b58900; /* golden for headings */
+    --subheading-color: #a67c00; /* slightly darker gold */
+    --panel-bg: #fffbe8; /* match container for left panel */
+    --border-color: #f5e6b2; /* warm light border */
+    --input-border: #e0c97f; /* soft gold border for inputs */
+    --button-bg: #ffb347; /* warm orange for buttons */
+    --button-hover: #ffa500; /* deeper orange on hover */
+    --preview-bg: #fdf6e3; /* match main bg */
+    --placeholder-color: #d8c690; /* muted gold */
+    --info-color: #a67c00; /* match subheading */
+    --slider-thumb-bg: #ffb347;
 }
 
 .dark-mode {
@@ -29,11 +30,13 @@
     --panel-bg: #252525;
     --border-color: #444;
     --input-border: #555;
-    --button-bg: #2980b9;
-    --button-hover: #3498db;
+    --button-bg: #ffb347;
+    --button-hover: #ffa500;
     --preview-bg: #333;
     --placeholder-color: #666;
     --info-color: #aaa;
+    --slider-thumb-bg: #ffb347; /* keep thumb yellow in dark mode for contrast */
+    --select-text-color: #e0e0e0; 
 }
 
 body {
@@ -102,18 +105,24 @@ input[type="file"],
 select {
     width: 100%;
     padding: 10px;
-    border: 1px solid var(--input-border);
     border-radius: 4px;
-    background-color: var(--container-bg);
     color: var(--text-color);
+    background-color: var(--container-bg);
+    border: 1px solid var(--input-border);
+}
+
+body.dark-mode select {
+    color: var(--select-text-color); /* dark text in dark mode */
+    background-color: var(--container-bg);
+    border: 1px solid var(--input-border);
 }
 
 input[type="range"] {
     width: 100%;
     margin-top: 5px;
     -webkit-appearance: none;
-    height: 8px;
-    background: #ddd;
+    height: 2px;
+    background: var(--input-border);
     border-radius: 4px;
     outline: none;
 }
@@ -124,7 +133,7 @@ input[type="range"]::-webkit-slider-thumb {
     width: 18px;
     height: 18px;
     border-radius: 50%;
-    background: #ff8585;
+    background: var(--slider-thumb-bg);
     cursor: pointer;
 }
 
@@ -132,7 +141,7 @@ input[type="range"]::-moz-range-thumb {
     width: 18px;
     height: 18px;
     border-radius: 50%;
-    background: #ff8585;
+    background: var(--slider-thumb-bg);
     cursor: pointer;
     border: none;
 }
@@ -141,8 +150,8 @@ input[type="range"]::-moz-range-thumb {
     display: block;
     width: 100%;
     padding: 12px;
-    background-color: #ff8585;
-    color: black;
+    background-color: var(--button-bg);
+    color: #3a2c0a;
     border: none;
     border-radius: 4px;
     font-size: 16px;
@@ -152,7 +161,7 @@ input[type="range"]::-moz-range-thumb {
 }
 
 .primary-button:hover {
-    background-color: #ff6b6b;
+    background-color: var(--button-hover);
 }
 
 /* Preview Panel */
@@ -194,9 +203,9 @@ input[type="range"]::-moz-range-thumb {
     padding: 0 12px;
     font-size: 16px;
     border-radius: 6px;
-    border: 1px solid #444;
-    background: #222;
-    color: #fff;
+    border: 1px solid #e0c97f;
+    background-color: var(--container-bg);
+    color: var(--text-color);
     margin-top: 8px;
     box-sizing: border-box;
     width: 400px; /* doubled width */
@@ -204,7 +213,6 @@ input[type="range"]::-moz-range-thumb {
 }
 
 #filename-input:focus {
-    border-color: #ff7f7f;
     outline: none;
 }
 
@@ -328,7 +336,9 @@ input:checked + .slider:before {
     }
     
     .settings-panel {
-        border-right: none;
+        /* border-right: none; */
+        background-color: var(--panel-bg);
+        border-right: 1px solid var(--border-color);
         border-bottom: 1px solid var(--border-color);
     }
     
