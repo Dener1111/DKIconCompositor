@@ -77,6 +77,15 @@ h2 {
     background-color: var(--panel-bg);
     border-right: 1px solid var(--border-color);
     width: 33.33%; /* 1/3 of the width */
+    display: flex;
+    flex-direction: column;
+}
+
+.bottom-actions {
+    margin-top: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
 }
 
 .setting-group {
