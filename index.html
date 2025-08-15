@@ -58,20 +58,21 @@
                     </select>
                 </div>
                 
-                <div class="setting-group">
-                    <div class="slider-header">
-                        <label for="badge-size">Badge Size:</label>
-                        <span id="badge-size-value">45%</span>
+                <div class="setting-group sliders-row">
+                    <div class="slider-col">
+                        <div class="slider-header">
+                            <label for="icon-scale">Icon Size:</label>
+                            <span id="icon-scale-value">95%</span>
+                        </div>
+                        <input type="range" id="icon-scale" min="60" max="100" value="95">
                     </div>
-                    <input type="range" id="badge-size" min="20" max="50" value="45">
-                </div>
-
-                <div class="setting-group">
-                    <div class="slider-header">
-                        <label for="icon-scale">Icon Scale:</label>
-                        <span id="icon-scale-value">95%</span>
+                    <div class="slider-col">
+                        <div class="slider-header">
+                            <label for="badge-size">Badge Size:</label>
+                            <span id="badge-size-value">45%</span>
+                        </div>
+                        <input type="range" id="badge-size" min="20" max="50" value="45">
                     </div>
-                    <input type="range" id="icon-scale" min="60" max="100" value="95">
                 </div>
                 <div class="slider-header">
                     <label for="resolution-select">Resolution:</label>

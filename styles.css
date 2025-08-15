@@ -337,6 +337,27 @@ input:checked + .slider:before {
     justify-content: space-between;
     align-items: center;
     margin-bottom: 8px;
+    gap: 12px; /* Add gap between label and value */
+}
+
+.sliders-row {
+    display: flex;
+    gap: 24px;
+    align-items: flex-end;
+    margin-bottom: 20px;
+}
+
+.slider-col {
+    flex: 1 1 0;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    min-width: 0; /* Prevent overflow */
+}
+
+.sliders-row .slider-header {
+    width: auto;
+    margin-bottom: 8px;
 }
 
 .slider-header label {
@@ -391,7 +412,10 @@ body.dark-mode .addfile-icon {
     color: #fff;
 }
 
-#icon-scale {
+#icon-scale, #badge-size {
     width: 100%;
-    margin-top: 5px;
+    margin-top: 0;
+    margin-bottom: 0;
+    margin-right: 0;
+    margin-left: 0;
 }
