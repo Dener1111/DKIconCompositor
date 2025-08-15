@@ -10,11 +10,18 @@ document.addEventListener('DOMContentLoaded', function() {
     const previewCanvas = document.getElementById('preview-canvas');
     const darkModeToggle = document.getElementById('dark-mode-toggle');
     const filenameInput = document.getElementById('filename-input');
+    const iconScaleSlider = document.getElementById('icon-scale');
+    const iconScaleValue = document.getElementById('icon-scale-value');
     
     // Set dark mode as default
     document.body.classList.add('dark-mode');
     darkModeToggle.checked = true;
     localStorage.setItem('darkMode', 'enabled');
+
+    iconScaleSlider.addEventListener('input', function() {
+        iconScaleValue.textContent = this.value + '%';
+        updatePreview();
+    });
     
     // Handle dark mode toggle
     darkModeToggle.addEventListener('change', function() {
@@ -160,7 +167,35 @@ document.addEventListener('DOMContentLoaded', function() {
         initCanvas();
 
         if (mainIcon) {
-            drawImageMaintainAspectRatio(mainIcon, 0, 0, previewCanvas.width, previewCanvas.height);
+            // Calculate scale
+            const scale = parseInt(iconScaleSlider.value) / 100;
+            const canvasW = previewCanvas.width;
+            const canvasH = previewCanvas.height;
+            let iconW = canvasW * scale;
+            let iconH = canvasH * scale;
+
+            // Determine pivot opposite to badge corner
+            let iconX = 0, iconY = 0;
+            switch (badgePositionSelect.value) {
+                case 'top-left':
+                    iconX = canvasW - iconW;
+                    iconY = canvasH - iconH;
+                    break;
+                case 'top-right':
+                    iconX = 0;
+                    iconY = canvasH - iconH;
+                    break;
+                case 'bottom-left':
+                    iconX = canvasW - iconW;
+                    iconY = 0;
+                    break;
+                case 'bottom-right':
+                    iconX = 0;
+                    iconY = 0;
+                    break;
+            }
+
+            drawImageMaintainAspectRatio(mainIcon, iconX, iconY, iconW, iconH);
 
             if (badgeIcon) {
                 const badgeSize = parseInt(badgeSizeSlider.value) / 100;
@@ -238,20 +273,44 @@ document.addEventListener('DOMContentLoaded', function() {
             alert('Please select a main icon first.');
             return;
         }
-
+    
         const resolution = parseInt(resolutionSelect.value);
         const tempCanvas = document.createElement('canvas');
         tempCanvas.width = resolution;
         tempCanvas.height = resolution;
         const tempCtx = tempCanvas.getContext('2d');
-
-        drawImageMaintainAspectRatio(mainIcon, 0, 0, resolution, resolution, tempCtx);
-
+    
+        // Get icon scale and pivot logic
+        const iconScale = parseInt(document.getElementById('icon-scale').value) / 100;
+        let iconW = resolution * iconScale;
+        let iconH = resolution * iconScale;
+        let iconX = 0, iconY = 0;
+        switch (badgePositionSelect.value) {
+            case 'top-left':
+                iconX = resolution - iconW;
+                iconY = resolution - iconH;
+                break;
+            case 'top-right':
+                iconX = 0;
+                iconY = resolution - iconH;
+                break;
+            case 'bottom-left':
+                iconX = resolution - iconW;
+                iconY = 0;
+                break;
+            case 'bottom-right':
+                iconX = 0;
+                iconY = 0;
+                break;
+        }
+    
+        drawImageMaintainAspectRatio(mainIcon, iconX, iconY, iconW, iconH, tempCtx);
+    
         if (badgeIcon) {
             const badgeSize = parseInt(badgeSizeSlider.value) / 100;
             const badgeWidth = resolution * badgeSize;
             const badgeHeight = resolution * badgeSize;
-
+    
             let badgeX, badgeY;
             switch (badgePositionSelect.value) {
                 case 'top-left':
@@ -271,45 +330,45 @@ document.addEventListener('DOMContentLoaded', function() {
                     badgeY = resolution - badgeHeight;
                     break;
             }
-
+    
             // Calculate grow and blur in pixels based on resolution
             const growPx = Math.round(resolution * CUTOUT_GROW_PERCENT);
             const blurPx = Math.round(resolution * CUTOUT_BLUR_PERCENT);
-
+    
             // Draw badge shape to temp canvas
             const badgeShapeCanvas = document.createElement('canvas');
             badgeShapeCanvas.width = resolution;
             badgeShapeCanvas.height = resolution;
             const badgeShapeCtx = badgeShapeCanvas.getContext('2d');
             drawImageMaintainAspectRatio(badgeIcon, badgeX, badgeY, badgeWidth, badgeHeight, badgeShapeCtx);
-
+    
             // Create mask canvas for grown and blurred mask
             const maskCanvas = document.createElement('canvas');
             maskCanvas.width = resolution;
             maskCanvas.height = resolution;
             const maskCtx = maskCanvas.getContext('2d');
-
+    
             // Simulate "grow" by drawing badge shape with small offsets
             for (let dx = -growPx; dx <= growPx; dx += Math.max(1, Math.floor(growPx / 2))) {
                 for (let dy = -growPx; dy <= growPx; dy += Math.max(1, Math.floor(growPx / 2))) {
                     maskCtx.drawImage(badgeShapeCanvas, dx, dy);
                 }
             }
-
+    
             // Apply a small blur for edge softness
             maskCtx.filter = `blur(${blurPx}px)`;
             maskCtx.drawImage(maskCanvas, 0, 0);
             maskCtx.filter = 'none';
-
+    
             // Use the blurred mask directly for cutout
             tempCtx.globalCompositeOperation = 'destination-out';
             tempCtx.drawImage(maskCanvas, 0, 0);
-
+    
             // Draw badge on top
             tempCtx.globalCompositeOperation = 'source-over';
             drawImageMaintainAspectRatio(badgeIcon, badgeX, badgeY, badgeWidth, badgeHeight, tempCtx);
         }
-
+    
         const filename = filenameInput.value.trim() || 'composite-icon.png';
         const link = document.createElement('a');
         link.download = filename;
